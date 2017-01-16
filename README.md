@@ -12,8 +12,8 @@
 * 第一步：准备
   * 一台安装了“TFFinder”的iOS移动设备（暂时只支持iOS）；	
   * 一台电脑（暂时只支持Mac OS X）；
-  * 移动设备和电脑在同一局域网络中（连同一个WiFi或者移动设备连接电脑发出的WiFi热点）；
-  * 文件表生成器“FileListMaker”（下载地址：<a>https://pan.baidu.com/s/1hrZodV2</a>）；
+  * 移动设备和电脑在同一局域网络中（连同一个WiFi或者移动设备连接电脑发出的WiFi热点）
+  * 文件表生成器"FileListMaker"（下载地址：<a href="https://github.com/teanfoo/TFFinder/blob/master/TFFileListMaker/FileListMaker.zip">GitHub</a>或者<a href="https://pan.baidu.com/s/1hrZodV2">百度网盘</a>）；
   
 * 第二步：在电脑上开启WebServer服务（注：暂时只提供了Mac版的教程，后续会更新。）
   * 在电脑上打开“终端”这个应用：
