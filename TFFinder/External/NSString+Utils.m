@@ -2,8 +2,8 @@
 //  NSString+Utils.m
 //  TFFinder
 //
-//  Created by apple on 16/12/19.
-//  Copyright © 2016年 TeanFoo. All rights reserved.
+//  Created by teanfoo on 16/12/19.
+//  Copyright © 2016 TeanFoo. All rights reserved.
 //
 
 #import "NSString+Utils.h"

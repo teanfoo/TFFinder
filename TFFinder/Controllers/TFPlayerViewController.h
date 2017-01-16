@@ -2,8 +2,8 @@
 //  TFPlayerViewController.h
 //  TFFinder
 //
-//  Created by apple on 16/12/28.
-//  Copyright © 2016年 TeanFoo. All rights reserved.
+//  Created by teanfoo on 16/12/28.
+//  Copyright © 2016 TeanFoo. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

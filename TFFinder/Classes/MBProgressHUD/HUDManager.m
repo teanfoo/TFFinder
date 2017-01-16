@@ -2,8 +2,8 @@
 //  HUDManager.m
 //  wbhelper
 //
-//  Created by apple on 16/10/12.
-//  Copyright © 2016年 TeanFoo. All rights reserved.
+//  Created by teanfoo on 16/10/12.
+//  Copyright © 2016 TeanFoo. All rights reserved.
 //
 
 #import "HUDManager.h"
