@@ -1,0 +1,100 @@
+/*----------------------------------------------------------------------------------------------------------------------|
+|                                                                                                                       |
+|  PrefixHeader.pch                                                                                                     |
+|                                                                                                                       |
+|                                                                                                                       |
+|  Created by teanfoo on 16/12/12.                                                                                      |
+|  Copyright © 2016 TeanFoo. All rights reserved.                                                                       |
+|                                                                                                                       |
+|  Include any system framework and library headers here that should be included in all compilation units.              |
+|  You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.     |
+|--------------------------------------------------如受用，请保留原创名！--------------------------------------------------*/
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#pragma mark - 屏幕宽高
+#define SCREEN_W [UIScreen mainScreen].bounds.size.width
+#define SCREEN_H [UIScreen mainScreen].bounds.size.height
+#define HALF_SCREEN_W ([UIScreen mainScreen].bounds.size.width/2)
+#define HALF_SCREEN_H ([UIScreen mainScreen].bounds.size.height/2)
+
+#pragma mark - 开发环境选择
+#define TEST_MODE 1 // 1为测试环境，0为生产环境
+#if TEST_MODE
+#   define DLog(fmt, ...) NSLog((@"%s [Line:%d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
+#   define DLog(...)
+#endif
+
+#pragma mark - 检测NSString、NSArray、NSDictionary是否为空
+#define kStringIsEmpty(str)     (str==nil || [str isKindOfClass:[NSNull class]] || str.length<1)
+#define kArrayIsEmpty(arr)      (arr==nil || [arr isKindOfClass:[NSNull class]] || arr.count==0)
+#define kDictionaryIsEmpty(dic) (dic==nil || [dic isKindOfClass:[NSNull class]] || dic.allKeys==0)
+
+#pragma mark - 常用缩写
+#define kDevice             [UIDevice currentDevice]
+#define kApplication        [UIApplication sharedApplication]
+#define kKeyWindow          [UIApplication sharedApplication].keyWindow
+#define kAppDelegate        [UIApplication sharedApplication].delegate
+#define kUserDefaults       [NSUserDefaults standardUserDefaults]
+#define kNotificationCenter [NSNotificationCenter defaultCenter]
+// APP版本号
+#define kAppVersion [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
+// iOS版本号
+#define kiOSVersion [[[UIDevice currentDevice] systemVersion] floatValue]
+// 获取当前语言
+#define kCurrentLanguage ([[NSLocale preferredLanguages] objectAtIndex:0])
+// 判断是否为iPhone
+#define kIsiPhone   (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+// 判断是否为iPad
+#define kIsiPad     (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+
+#pragma mark - 获取本地存储路径
+#define kDocumentPath   [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]
+#define kCachePath      [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]
+#define kTempPath       NSTemporaryDirectory()
+
+#pragma mark - 颜色
+#define kRGBAColorMax_1(r, g, b, a)     [UIColor colorWithRed:r green:g blue:b alpha:a]
+#define kRGBAColorMax_255(r, g, b, a)   [UIColor colorWithRed:(r)/255.0 green:(r)/255.0 blue:(r)/255.0 alpha:(a)/255.0]
+#define kRandomColorAndAlpha            kRGBAColorMax_255(arc4random_uniform(256),\
+                                                          arc4random_uniform(256),\
+                                                          arc4random_uniform(256),\
+                                                          arc4random_uniform(256))
+#define kRandomColor                    kRGBAColorMax_255(arc4random_uniform(256),\
+                                                          arc4random_uniform(256),\
+                                                          arc4random_uniform(256), 255.0)
+#define kColorWithHex(rgbValue)         [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0\
+                                                        green:((float)((rgbValue & 0xFF00) >> 8))/255.0\
+                                                         blue:((float)(rgbValue & 0xFF))/255.0 \
+                                                        alpha:1.0]
+
+#pragma mark - 声明强/弱引用
+#define kLet_weakSelf      __weak typeof(self) weakSelf = self;
+#define kLet_strongSelf    __strong typeof(self) self = weakSelf;
+
+#pragma mark - GCD
+#define BACK_DOING(someWorks) dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), someWorks)
+#define MAIN_DOING(someWorks) dispatch_async(dispatch_get_main_queue(), someWorks)
+// 一次性代码
+#define ONCE_DOING(someWorks)\
+static dispatch_once_t onceToken;\
+dispatch_once(&onceToken, someWorks)
+// 延时timeInterval秒后在主线程执行someWorks. someWorks is a block.
+#define AFTER_DOING(timeInterval, someWorks)\
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), someWorks)
+
+#pragma mark - 通用头文件
+#import "AppDelegate.h"// APP代理
+#import "GlobalData.h"// 全局数据模型
+#import "HUDManager.h"// HUD指示器
+#import "NSString+Utils.h"// NSString实用工具
+#import "UIImageView+Utils.h"// UIImageView实用工具
+
+
+// documentController.UTI 表示那些类型的文件支持第三方软件打开，此链接里面有各种类型文件对应的参数
+// https:// developer.apple.com/library/mac/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
+
+
+#endif /* PrefixHeader_pch */
