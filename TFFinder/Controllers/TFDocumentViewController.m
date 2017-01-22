@@ -66,8 +66,17 @@
     [[HUDManager manager] hideWaitView];
     
     self.webView.hidden = NO;// 加载完成，显示UI
+    
+    ONCE_DOING(^{// 使用提示
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"横着看，更清晰哦!"
+                                                   message:@"如果屏幕不能旋转，可能是您锁定了屏幕方向，请解锁后再尝试。"
+                                                  delegate:nil
+                                         cancelButtonTitle:@"我知道了"
+                                         otherButtonTitles:nil];
+        [alert show];
+    });
 }
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error {
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     [[HUDManager manager] hideWaitView];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"😂"

@@ -10,11 +10,12 @@
 #import "PrefixHeader.pch"
 #import "TFDocumentViewController.h"
 
-@interface SetIPViewController () <UITextFieldDelegate>
+@interface SetIPViewController () <UITextFieldDelegate, UIActionSheetDelegate>
 
 // views
 @property (weak, nonatomic) UIView *panelView;// 操作面板视图
 @property (weak, nonatomic) UITextField *IPTextField;// IP输入框
+@property (weak, nonatomic) UITextField *portTextField;// 端口输入框
 @property (weak, nonatomic) UIImageView *appIconView;// app图标视图
 @property (weak, nonatomic) UIView *aboutView;// 关于视图
 
@@ -61,39 +62,50 @@
 - (void)setupMainView {
     // 判断横竖屏
     CGFloat view_W = SCREEN_H > SCREEN_W ? SCREEN_W : SCREEN_H;
-
+    
     // 创建面板
     UIView *panelView = [[UIView alloc] initWithFrame:CGRectMake((SCREEN_W-view_W)/2, SCREEN_H*0.15, view_W, 200)];
     panelView.backgroundColor = [UIColor clearColor];
     // IP输入框
-    UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(15, 0, view_W-30, 44)];
-    textField.clearButtonMode = UITextFieldViewModeWhileEditing;// 删除按钮
-    textField.keyboardType = UIKeyboardTypeDecimalPad ;// 数字和点键盘
-    textField.placeholder = @"请填写服务器的IP地址";
-    textField.textAlignment = NSTextAlignmentCenter;
-    textField.delegate = self;
-    [panelView addSubview:textField];
-    self.IPTextField = textField;
+    UITextField *ipTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 0, view_W-30, 44)];
+    ipTextField.clearButtonMode = UITextFieldViewModeWhileEditing;// 删除按钮
+    ipTextField.keyboardType = UIKeyboardTypeDecimalPad ;// 数字和点键盘
+    ipTextField.placeholder = @"请填写服务器的IP地址";
+    ipTextField.textAlignment = NSTextAlignmentCenter;
+    ipTextField.delegate = self;
+    [panelView addSubview:ipTextField];
+    self.IPTextField = ipTextField;
     // IP输入框下划线
     UIView *line1 = [[UIView alloc] initWithFrame:CGRectMake(15, 44, view_W-30, 1)];
     line1.backgroundColor = [UIColor grayColor];
     [panelView addSubview:line1];
+    // 端口输入框
+    UITextField *portTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 45, view_W-30, 44)];
+    portTextField.clearButtonMode = UITextFieldViewModeWhileEditing;// 删除按钮
+    portTextField.keyboardType = UIKeyboardTypeDecimalPad ;// 数字和点键盘
+    portTextField.placeholder = @"端口号";
+    portTextField.textAlignment = NSTextAlignmentCenter;
+    portTextField.delegate = self;
+    [panelView addSubview:portTextField];
+    self.portTextField = portTextField;
+    // 端口输入框下划线
+    UIView *line2 = [[UIView alloc] initWithFrame:CGRectMake(15, 89, view_W-30, 1)];
+    line2.backgroundColor = [UIColor grayColor];
+    [panelView addSubview:line2];
     // 连接 按钮
-    UIButton *connectingButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 75, view_W-30, 44)];
+    UIButton *connectingButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 115, view_W-30, 44)];
     connectingButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
-    connectingButton.backgroundColor = kRGBAColorMax_1(0.2, 0.5, 1.0, 1.0);
+    connectingButton.backgroundColor = kRGBAColorMax_1(0.2, 0.55, 1.0, 1.0);
     connectingButton.layer.cornerRadius = 5.0;
     [connectingButton setTitle:@"连接" forState:UIControlStateNormal];
     [connectingButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [connectingButton addTarget:self action:@selector(onConnectingButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [panelView addSubview:connectingButton];
     // 帮助 按钮
-    UIButton *helperButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 140, view_W-30, 44)];
-    helperButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
-    helperButton.backgroundColor = kRGBAColorMax_1(0.2, 0.8, 0.2, 1.0);
-    helperButton.layer.cornerRadius = 5.0;
+    UIButton *helperButton = [[UIButton alloc] initWithFrame:CGRectMake(120, 170, view_W-240, 20)];
+    helperButton.titleLabel.font = [UIFont systemFontOfSize:16.0];
     [helperButton setTitle:@"帮助" forState:UIControlStateNormal];
-    [helperButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [helperButton setTitleColor:kRGBAColorMax_1(0.2, 0.55, 1.0, 1.0) forState:UIControlStateNormal];
     [helperButton addTarget:self action:@selector(onHelperButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [panelView addSubview:helperButton];
     
@@ -140,65 +152,122 @@
     
     // 初始值设置
     self.IPTextField.text = [GlobalData Data].serverIP;
+    self.portTextField.text = [GlobalData Data].serverPort;
 }
 #pragma mark - 按钮的点击事件
 - (void)onConnectingButtonClick {
     // 收起键盘
     if ([self.IPTextField isFirstResponder]) [self.IPTextField resignFirstResponder];
     // 检验非法性
-    if ([self.IPTextField.text isLegalIP]) {
-        // 保存数据到RAM, 保证serverIP不为nil, 再赋值
-        if ([GlobalData Data].serverIP) [GlobalData Data].serverIP = self.IPTextField.text;
-        if ([GlobalData Data].serverPath) [GlobalData Data].serverPath = [NSString stringWithFormat:@"http://%@/TFFinder", self.IPTextField.text];
-        // 连接服务器
-        [self connectToServer];
-    }
-    else {
+    if (![self.IPTextField.text isLegalIP]) {
         DLog(@"【IP非法】");
         // 提示错误
         [[HUDManager manager] showTipViewWithOperatingResult:OperatingFailed
                                                        title:@"IP地址无效"
                                                      message:nil
                                                       inView:self.view];
+        return;
     }
+    if ([self.portTextField.text isEqualToString:@""]) {
+        DLog(@"【未填写端口号】");
+        // 提示错误
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"请填写端口号"
+                                                        message:@"提示：服务器默认的端口号为80"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"我知道了"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    if (![self.portTextField.text isLegalPort]) {
+        DLog(@"【端口号非法】");
+        // 提示错误
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"端口号非法"
+                                                        message:@"提示：取0到65535之间的整数"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"我知道了"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
+    // 保存数据到RAM, 保证serverIP不为nil, 再赋值
+    if ([GlobalData Data].serverIP) [GlobalData Data].serverIP = self.IPTextField.text;
+    if ([GlobalData Data].serverPort) [GlobalData Data].serverPort = self.portTextField.text;
+    if ([GlobalData Data].serverPath) [GlobalData Data].serverPath = [NSString stringWithFormat:@"http://%@:%@/TFFinder", self.IPTextField.text, self.portTextField.text];
+    // 回收所有键盘
+    [self.view endEditing:YES];
+    // 连接服务器
+    [self connectToServer];
 }
 #pragma mark - 连接服务器
 - (void)connectToServer {
     [[HUDManager manager] showWaitViewAndText:@"连接中，请稍候..." inView:self.view];
     NSString *configFilePath = [NSString stringWithFormat:@"%@%@",[GlobalData Data].serverPath, kConfigFilePath];
-    BACK_DOING(^{
-        NSURL *serverUrl = [NSURL URLWithString:configFilePath];
-        NSArray *configFileContent = [[NSArray alloc] initWithContentsOfURL:serverUrl];
-//        DLog(@"【configFileContent: %@】", configFileContent);
-        MAIN_DOING(^{
-            [[HUDManager manager] hideWaitView];
-            if (configFileContent == nil) {// 连接失败
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"连接失败!"
-                                                                message:@"1.请确认您的服务已开启;\n2.请确认您的IP地址填写正确。"
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"我知道了"
-                                                      otherButtonTitles:nil];
-                [alert show];
-            }
-            else {// 连接成功
-                // 保存数据到ROM
-                [[GlobalData Data] saveData];
-                // 跳转到文件列表界面
-                AppDelegate *delegate = kAppDelegate;
-                delegate.fileListNavigationController = nil;
-                delegate.window.rootViewController = delegate.fileListNavigationController;
-            }
-        });
-    });
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:configFilePath]];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+                               [[HUDManager manager] hideWaitView];
+                               if (data == nil) {// 未获取到数据,退出
+                                   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"连接失败!"
+                                                                                   message:@"1.请确认您的服务已开启;\n2.请确认IP和端口号填写正确;\n3.请确认设备在同一网络环境中。"
+                                                                                  delegate:nil
+                                                                         cancelButtonTitle:@"我知道了"
+                                                                         otherButtonTitles:nil];
+                                   [alert show];
+                                   return;
+                               }
+                               
+                               unsigned long encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
+                               NSString *content = [[NSString alloc] initWithData:data encoding:encode];
+                               //                               DLog(@"content: %@", content);
+                               if (content == nil) {// 数据错误,退出
+                                   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"连接失败!"
+                                                                                   message:@"1.请确认您的服务已开启;\n2.请确认IP和端口号填写正确;\n3.请确认设备在同一网络环境中。"
+                                                                                  delegate:nil
+                                                                         cancelButtonTitle:@"我知道了"
+                                                                         otherButtonTitles:nil];
+                                   [alert show];
+                                   return;
+                               }
+                               
+                               // 连接成功
+                               // 保存数据到ROM
+                               [[GlobalData Data] saveData];
+                               // 跳转到文件列表界面
+                               AppDelegate *delegate = kAppDelegate;
+                               delegate.fileListNavigationController = nil;
+                               delegate.window.rootViewController = delegate.fileListNavigationController;
+                           }];
 }
 #pragma mark - 获取帮助
 - (void)onHelperButtonClick {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"TFFinderHelper" ofType:@".webarchive"];
-    TFDocumentViewController *documentVC = [[TFDocumentViewController alloc] init];
-    documentVC.navigationItem.title = @"帮助";
-    documentVC.filePath = path;
-    documentVC.showMoreButton = NO;
-    [self.navigationController pushViewController:documentVC animated:YES];
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"选择帮助文档"
+                                                       delegate:self
+                                              cancelButtonTitle:@"取消"
+                                         destructiveButtonTitle:nil
+                                              otherButtonTitles:@"Mac OS X平台帮助文档", @"Windows平台帮助文档", nil];
+    [sheet showInView:self.view];
+}
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"Helper4Mac" ofType:@".webarchive"];
+        TFDocumentViewController *documentVC = [[TFDocumentViewController alloc] init];
+        documentVC.navigationItem.title = @"帮助";
+        documentVC.filePath = path;
+        documentVC.showMoreButton = NO;
+        [self.navigationController pushViewController:documentVC animated:YES];
+    }
+    if (buttonIndex == 1) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"Helper4Windows" ofType:@".webarchive"];
+        TFDocumentViewController *documentVC = [[TFDocumentViewController alloc] init];
+        documentVC.navigationItem.title = @"帮助";
+        documentVC.filePath = path;
+        documentVC.showMoreButton = NO;
+        [self.navigationController pushViewController:documentVC animated:YES];
+    }
 }
 #pragma mark - 点击view回收键盘
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {

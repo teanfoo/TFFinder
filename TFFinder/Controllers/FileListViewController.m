@@ -81,34 +81,53 @@
 #pragma mark - 加载数据，配置视图
 - (void)loadDataAndConfigView {
     [[HUDManager manager] showWaitViewAndText:@"获取中，请稍候..." inView:self.view];
-    BACK_DOING(^{
-        NSArray *configFileContent = [NSArray arrayWithContentsOfURL:self.configFileURL];
-        NSMutableArray *fileList = [NSMutableArray array];
-//        DLog(@"【configFileContent: %@】", configFileContent);
-        for (NSString *fileName in configFileContent) {
-            // 过滤隐藏文件和文件表生成工具（FileListMaker）
-            if ([fileName hasPrefix:@"/."] || [fileName isEqualToString:@"/FileListMaker"]) continue;
-            if ([fileName rangeOfString:@"."].length == 0) // 文件夹
-                [self.fileList addObject:fileName];
-            else// 文件
-                [fileList addObject:fileName];
-        }
-        // 合并文件夹列表和文件列表
-        [self.fileList addObjectsFromArray:fileList];
-//        DLog(@"【fileList: %@】", self.fileList);
-        MAIN_DOING(^{
-            [[HUDManager manager] hideWaitView];
-            if (self.fileList.count > 0) {
-                // 刷新tableview
-                self.tableView.hidden = NO;;
-                [self.tableView reloadData];
-            }
-            else {
-                // 显示空文件占位图
-                self.noDataPlaceholderView.hidden = NO;
-            }
-        });
-    });
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.configFileURL];
+    request.HTTPMethod = @"GET";
+    request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;// 忽略缓存
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
+                               [[HUDManager manager] hideWaitView];
+                               if (data == nil) {// 未获取到数据，显示空文件占位图，退出
+                                   self.noDataPlaceholderView.hidden = NO;
+                                   return;
+                               }
+                               
+                               unsigned long encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
+                               NSString *content = [[NSString alloc] initWithData:data encoding:encode];
+//                                                              DLog(@"content: %@", content);
+                               if (content == nil) {// 数据错误，显示空文件占位图，退出
+                                   self.noDataPlaceholderView.hidden = NO;
+                                   return;
+                               }
+                               
+                               NSArray *resultArray = [content componentsSeparatedByString:@"\""];
+                               NSMutableArray *fileNameArray = [NSMutableArray array];
+                               for (NSString *str in resultArray) {
+                                   if ([str hasPrefix:@"/"]) [fileNameArray addObject:str];
+                               }
+                               NSMutableArray *fileList = [NSMutableArray array];
+                               for (NSString *fileName in fileNameArray) {
+                                   // 过滤隐藏文件和文件表生成工具（FileListMaker）
+                                   if ([fileName hasPrefix:@"/."] || [fileName hasPrefix:@"/FileListMaker"]) continue;
+                                   if ([fileName rangeOfString:@"."].length == 0) // 文件夹
+                                       [self.fileList addObject:fileName];
+                                   else// 文件
+                                       [fileList addObject:fileName];
+                               }
+                               // 合并文件夹列表和文件列表
+                               [self.fileList addObjectsFromArray:fileList];
+                               // 显示对应的界面
+                               if (self.fileList.count > 0) {
+                                   // 刷新tableview
+                                   self.tableView.hidden = NO;;
+                                   [self.tableView reloadData];
+                               }
+                               else {
+                                   // 显示空文件占位图
+                                   self.noDataPlaceholderView.hidden = NO;
+                               }
+                           }];
 }
 
 #pragma mark - tableView代理和数据源方法

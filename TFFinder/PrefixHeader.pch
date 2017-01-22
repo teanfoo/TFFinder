@@ -36,7 +36,7 @@
 #define kDevice             [UIDevice currentDevice]
 #define kApplication        [UIApplication sharedApplication]
 #define kKeyWindow          [UIApplication sharedApplication].keyWindow
-#define kAppDelegate        [UIApplication sharedApplication].delegate
+#define kAppDelegate        (AppDelegate *)[[UIApplication sharedApplication] delegate]
 #define kUserDefaults       [NSUserDefaults standardUserDefaults]
 #define kNotificationCenter [NSNotificationCenter defaultCenter]
 // APP版本号

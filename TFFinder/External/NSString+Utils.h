@@ -25,6 +25,11 @@
  */
 - (BOOL)isLegalIP;
 /*!
+ * @abstract 端口是合法的？
+ * @return 合法:YES, 非法:NO
+ */
+- (BOOL)isLegalPort;
+/*!
  * @abstract QQ号是合法的？
  * @return 合法:YES, 非法:NO
  */

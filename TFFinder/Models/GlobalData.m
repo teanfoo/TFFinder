@@ -45,6 +45,7 @@ static GlobalData *instance;
     NSUserDefaults *ROM = [NSUserDefaults standardUserDefaults];
     
     [ROM setObject:self.serverIP forKey:k_SERVER_IP_KEY];
+    [ROM setObject:self.serverPort forKey:k_SERVER_PORT_KEY];
     [ROM setObject:self.serverPath forKey:k_SERVER_PATH_KEY];
 }
 
@@ -56,6 +57,14 @@ static GlobalData *instance;
         else _serverIP = ROM_SEVER_IP;
     }
     return _serverIP;
+}
+- (NSString *)serverPort {
+    if (_serverPort == nil) {
+        NSString *ROM_SEVER_PORT = [[NSUserDefaults standardUserDefaults] objectForKey:k_SERVER_PORT_KEY];
+        if (ROM_SEVER_PORT == nil) _serverPort = @"";
+        else _serverPort = ROM_SEVER_PORT;
+    }
+    return _serverPort;
 }
 - (NSString *)serverPath {
     if (_serverPath == nil) {

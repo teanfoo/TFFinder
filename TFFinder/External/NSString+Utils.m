@@ -41,6 +41,15 @@
     
     return YES;
 }
+- (BOOL)isLegalPort {
+    if (self.length>5) return NO;// 多余五位
+    NSString *str = @"^[0-9]+$";
+    NSPredicate* emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", str];
+    if (![emailTest evaluateWithObject:self]) return NO;// 含有非数字字符
+    if (self.integerValue >= 65535) return NO;// 超过65535
+    
+    return YES;
+}
 - (BOOL)isLegalQQ {
     if ([self hasPrefix:@"0"]) return NO;
     if (self.length<8 || self.length>10) return NO;

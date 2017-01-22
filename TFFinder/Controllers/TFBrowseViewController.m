@@ -91,7 +91,7 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     [self.webProgress finish];
 }
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error {
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     [self.webProgress finish];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"😂"
