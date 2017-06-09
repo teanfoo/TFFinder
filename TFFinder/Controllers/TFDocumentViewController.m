@@ -114,4 +114,8 @@
     return _documentController;
 }
 
+- (void)dealloc {
+    DLog(@"DocVC: dealloc");
+}
+
 @end

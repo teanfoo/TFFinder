@@ -42,6 +42,7 @@
 		1844F4381E03EC9700F27520 /* SetIPViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1844F4371E03EC9700F27520 /* SetIPViewController.m */; };
 		186212601E134F6600F2D016 /* TFPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1862125F1E134F6600F2D016 /* TFPlayerViewController.m */; };
 		186380D51E07C5E500A1F29D /* NSString+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 186380D41E07C5E500A1F29D /* NSString+Utils.m */; };
+		187D03021EE80B8C00B8F2CF /* TFAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 187D03011EE80B8C00B8F2CF /* TFAlertView.m */; };
 		18A0EC701E348109003B1888 /* Helper4Mac.webarchive in Resources */ = {isa = PBXBuildFile; fileRef = 18A0EC6E1E348109003B1888 /* Helper4Mac.webarchive */; };
 		18A0EC711E348109003B1888 /* Helper4Windows.webarchive in Resources */ = {isa = PBXBuildFile; fileRef = 18A0EC6F1E348109003B1888 /* Helper4Windows.webarchive */; };
 		18A2CE4C1E07D962001E30A8 /* TFBrowseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A2CE4B1E07D962001E30A8 /* TFBrowseViewController.m */; };
@@ -116,6 +117,8 @@
 		1862125F1E134F6600F2D016 /* TFPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFPlayerViewController.m; sourceTree = "<group>"; };
 		186380D31E07C5E500A1F29D /* NSString+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Utils.h"; sourceTree = "<group>"; };
 		186380D41E07C5E500A1F29D /* NSString+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Utils.m"; sourceTree = "<group>"; };
+		187D03001EE80B8C00B8F2CF /* TFAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFAlertView.h; sourceTree = "<group>"; };
+		187D03011EE80B8C00B8F2CF /* TFAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFAlertView.m; sourceTree = "<group>"; };
 		18A0EC6E1E348109003B1888 /* Helper4Mac.webarchive */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Helper4Mac.webarchive; sourceTree = "<group>"; };
 		18A0EC6F1E348109003B1888 /* Helper4Windows.webarchive */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Helper4Windows.webarchive; sourceTree = "<group>"; };
 		18A2CE4A1E07D962001E30A8 /* TFBrowseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFBrowseViewController.h; sourceTree = "<group>"; };
@@ -262,6 +265,7 @@
 		181068781E027ECF00D99240 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				187D02FF1EE80B8C00B8F2CF /* TFAlertView */,
 				180FAA881E0BDAF90030D442 /* SDWebImage */,
 				181068811E0281A400D99240 /* MBProgressHUD */,
 			);
@@ -352,6 +356,15 @@
 			name = TFPlayerViewVontroller;
 			sourceTree = "<group>";
 		};
+		187D02FF1EE80B8C00B8F2CF /* TFAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				187D03001EE80B8C00B8F2CF /* TFAlertView.h */,
+				187D03011EE80B8C00B8F2CF /* TFAlertView.m */,
+			);
+			path = TFAlertView;
+			sourceTree = "<group>";
+		};
 		18A2CE491E07D8C9001E30A8 /* TFBrowseViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -392,6 +405,7 @@
 				TargetAttributes = {
 					181068531E02413100D99240 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = KPLLYB2Y4S;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -461,6 +475,7 @@
 				180FAAB21E0BDAF90030D442 /* SDWebImagePrefetcher.m in Sources */,
 				180F253A1E160BE3005C6A5B /* TFWebProgress.m in Sources */,
 				180FAAB61E0BDAF90030D442 /* UIImageView+HighlightedWebCache.m in Sources */,
+				187D03021EE80B8C00B8F2CF /* TFAlertView.m in Sources */,
 				180FAAAC1E0BDAF90030D442 /* SDImageCache.m in Sources */,
 				180FAAB01E0BDAF90030D442 /* SDWebImageDownloaderOperation.m in Sources */,
 				181068891E0281A400D99240 /* MBProgressHUD.m in Sources */,
@@ -589,12 +604,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KPLLYB2Y4S;
 				INFOPLIST_FILE = TFFinder/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TeanFoo.TFFinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -603,12 +619,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = KPLLYB2Y4S;
 				INFOPLIST_FILE = TFFinder/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.TeanFoo.TFFinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

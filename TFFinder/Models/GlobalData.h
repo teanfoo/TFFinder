@@ -12,10 +12,14 @@
 #define k_SERVER_PORT_KEY @"serverPort_key"
 #define k_SERVER_PATH_KEY @"serverPath_key"
 
-static NSString * const kConfigFilePath = @"/.configFile.txt";// 配置文件相对路径
+static NSString * const kConfigFile = @"configFile.txt";// 配置文件
 
 @interface GlobalData : NSObject
 
+// RAM
+@property (assign, nonatomic) NSUInteger encode;// 编码类型
+
+// ROM
 @property (strong, nonatomic) NSString *serverIP;// 服务器IP地址
 @property (strong, nonatomic) NSString *serverPort;// 服务器端口号
 @property (strong, nonatomic) NSString *serverPath;// 服务器主路径

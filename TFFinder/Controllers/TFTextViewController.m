@@ -27,7 +27,7 @@
     // 隐藏文本视图
     self.textView.hidden = YES;
     // 设置标题
-    NSString *fileName = [[self.filePath componentsSeparatedByString:@"/"] lastObject];
+    NSString *fileName = self.filePath.lastPathComponent;
     self.navigationItem.title = [fileName URLDecodingString];
     // 加载数据并配置视图
     [self loadDataAndConfigView];

@@ -91,6 +91,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeInterval * NSEC_PE
 #import "HUDManager.h"// HUD指示器
 #import "NSString+Utils.h"// NSString实用工具
 #import "UIImageView+Utils.h"// UIImageView实用工具
+#import "TFAlertView.h"// 提示弹窗
 
 
 // documentController.UTI 表示那些类型的文件支持第三方软件打开，此链接里面有各种类型文件对应的参数

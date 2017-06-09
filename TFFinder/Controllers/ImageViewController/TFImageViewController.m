@@ -133,19 +133,17 @@
 - (void)loadImageFilePaths {
     self.imageFilePaths = [NSMutableArray array];
     // 根据点击文件的全路径获取 所在文件夹的路径 和 点击的文件名
-    NSArray *tempArr = [self.filePath componentsSeparatedByString:@"/"];
-    NSString *localPath = tempArr.firstObject;
-    for (int i=1; i<tempArr.count-1; i++)
-        localPath = [NSString stringWithFormat:@"%@/%@", localPath, tempArr[i]];
-    NSString *selectedImageName = tempArr.lastObject;
+    NSString *localPath = self.filePath.stringByDeletingLastPathComponent;
+    NSString *selectedImageName = self.filePath.lastPathComponent;
     
     for (NSInteger i=0; i<self.fileList.count; i++) {
         NSArray *name_type = [self.fileList[i] componentsSeparatedByString:@"."];
         if ([name_type.lastObject caseInsensitiveCompare:@"png"]==NSOrderedSame ||
             [name_type.lastObject caseInsensitiveCompare:@"jpg"]==NSOrderedSame ||
-            [name_type.lastObject caseInsensitiveCompare:@"gif"]==NSOrderedSame) {
+            [name_type.lastObject caseInsensitiveCompare:@"gif"]==NSOrderedSame ||
+            [name_type.lastObject caseInsensitiveCompare:@"jpeg"]==NSOrderedSame) {
             // 添加图片的路径到 数组
-            NSString *imageFilePath = [NSString stringWithFormat:@"%@%@", localPath, [self.fileList[i] URLEncodedString]];
+            NSString *imageFilePath = [localPath stringByAppendingPathComponent:[self.fileList[i] URLEncodedString]];
             [self.imageFilePaths addObject:imageFilePath];
             // 记录点击的索引
             if ([self.fileList[i] hasSuffix:selectedImageName])
@@ -153,8 +151,8 @@
         }
     }
     
-//        DLog(@"currentIndex: %@", @(self.currentIndex));
-//        DLog(@"\nimageFilePaths: %@", _imageFilePaths);
+//    DLog(@"currentIndex: %@", @(self.currentIndex));
+//    DLog(@"\nimageFilePaths: %@", _imageFilePaths);
 }
 
 #pragma mark - 懒加载

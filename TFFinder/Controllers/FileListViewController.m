@@ -50,7 +50,7 @@
     // 隐藏空文件占位图
     self.noDataPlaceholderView.hidden = YES;
     // 设置标题
-    NSString *folderName = [[self.localPath componentsSeparatedByString:@"/"] lastObject];
+    NSString *folderName = self.localPath.lastPathComponent;
     self.navigationItem.title = [folderName URLDecodingString];
     // 设置导航栏左边的按钮
     if ([self.navigationItem.title isEqualToString:@"TFFinder"]) {// 根视图
@@ -83,6 +83,7 @@
     [[HUDManager manager] showWaitViewAndText:@"获取中，请稍候..." inView:self.view];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.configFileURL];
     request.HTTPMethod = @"GET";
+    request.timeoutInterval = 10;
     request.cachePolicy = NSURLRequestReloadIgnoringLocalAndRemoteCacheData;// 忽略缓存
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]
@@ -92,24 +93,29 @@
                                    self.noDataPlaceholderView.hidden = NO;
                                    return;
                                }
-                               
-                               unsigned long encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
-                               NSString *content = [[NSString alloc] initWithData:data encoding:encode];
-//                                                              DLog(@"content: %@", content);
-                               if (content == nil) {// 数据错误，显示空文件占位图，退出
+
+                               NSString *content = [[NSString alloc] initWithData:data encoding:[GlobalData Data].encode];
+                               if (content.length == 0) {// 数据错误，显示空文件占位图，退出
                                    self.noDataPlaceholderView.hidden = NO;
                                    return;
                                }
                                
-                               NSArray *resultArray = [content componentsSeparatedByString:@"\""];
+                               NSArray *resultArray = [content componentsSeparatedByString:@","];
                                NSMutableArray *fileNameArray = [NSMutableArray array];
                                for (NSString *str in resultArray) {
-                                   if ([str hasPrefix:@"/"]) [fileNameArray addObject:str];
+                                   NSArray *tempArray = [str componentsSeparatedByString:@"/"];
+                                   if (tempArray.count == 2) {
+                                       [fileNameArray addObject:tempArray.lastObject];
+                                   }
                                }
                                NSMutableArray *fileList = [NSMutableArray array];
                                for (NSString *fileName in fileNameArray) {
-                                   // 过滤隐藏文件和文件表生成工具（FileListMaker）
-                                   if ([fileName hasPrefix:@"/."] || [fileName hasPrefix:@"/FileListMaker"]) continue;
+                                   // 过滤隐藏文件、配置文件和文件表生成工具（FileListMaker）
+                                   if ([fileName hasPrefix:@"."] ||
+                                       [fileName isEqualToString:kConfigFile] ||
+                                       [fileName hasPrefix:@"FileListMaker"])
+                                       continue;
+                                   
                                    if ([fileName rangeOfString:@"."].length == 0) // 文件夹
                                        [self.fileList addObject:fileName];
                                    else// 文件
@@ -138,7 +144,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellId"];
     if (cell == nil) cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"cellId"];
     // 根据文件名的类型设置cell
-    NSString *fileName = [self.fileList[indexPath.row] substringFromIndex:1];
+    NSString *fileName = self.fileList[indexPath.row];
     cell.textLabel.text = fileName;// 设置cell的显示名称
     NSArray *name_type = [fileName componentsSeparatedByString:@"."];
     if (name_type.count == 1) {// 没有后缀名，则认为是文件夹
@@ -161,7 +167,8 @@
         }
         else if ([type caseInsensitiveCompare:@"png"]==NSOrderedSame ||
                  [type caseInsensitiveCompare:@"jpg"]==NSOrderedSame ||
-                 [type caseInsensitiveCompare:@"gif"]==NSOrderedSame) {// 图片
+                 [type caseInsensitiveCompare:@"gif"]==NSOrderedSame ||
+                 [type caseInsensitiveCompare:@"jpeg"]==NSOrderedSame) {// 图片
             cell.imageView.image = [UIImage imageNamed:@"photoIcon"];
             cell.tag = CELL_TAG_PHOTO_FILE;
         }
@@ -230,7 +237,7 @@
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     // 获取文件的真实路径
     NSString *fileName = self.fileList[indexPath.row];
-    NSString *path = [NSString stringWithFormat:@"%@%@", self.localPath, [fileName URLEncodedString]];
+    NSString *path = [self.localPath stringByAppendingPathComponent:[fileName URLEncodedString]];
 //  DLog(@"----->path: %@", path);
     // 根据cell的类型执行相应的操作
     switch (cell.tag) {
@@ -266,9 +273,9 @@
         } break;
         case CELL_TAG_DOCUMENT_FILE: {// 文档(PDF、World、Excel、PPT)类型
             TFDocumentViewController *documentVC = [[TFDocumentViewController alloc] init];
-            documentVC.navigationItem.title = [fileName substringFromIndex:1];
+            documentVC.navigationItem.title = fileName;
             documentVC.filePath = path;
-            documentVC.showMoreButton = YES;
+            documentVC.showMoreButton = kIsiPhone;
             [self.navigationController pushViewController:documentVC animated:YES];
         } break;
 
@@ -298,7 +305,7 @@
 // models
 - (NSURL *)configFileURL {
     if (_configFileURL == nil) {
-        _configFileURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", self.localPath, kConfigFilePath]];
+        _configFileURL = [NSURL URLWithString:[self.localPath stringByAppendingPathComponent:kConfigFile]];
     }
     return _configFileURL;
 }

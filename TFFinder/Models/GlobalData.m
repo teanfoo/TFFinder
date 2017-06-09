@@ -50,6 +50,13 @@ static GlobalData *instance;
 }
 
 #pragma mark - 懒加载初始属性值
+- (NSUInteger)encode {
+    if (_encode == 0) {
+        // 设置默认的编码方式
+        _encode = NSUTF8StringEncoding;
+    }
+    return _encode;
+}
 - (NSString *)serverIP {
     if (_serverIP == nil) {
         NSString *ROM_SEVER_IP = [[NSUserDefaults standardUserDefaults] objectForKey:k_SERVER_IP_KEY];

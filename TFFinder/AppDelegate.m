@@ -50,13 +50,14 @@
 #pragma mark - 自定义路由方法
 - (void)setRootViewController {
 //    NSLog(@"serverPath: %@", [GlobalData Data].serverPath);
-    if ([[GlobalData Data].serverPath isEqualToString:@""]) {
-        self.window.rootViewController = self.setIPNavigationController;
-    }
-    else {
-        self.window.rootViewController = self.fileListNavigationController;
-    }
+    self.window.rootViewController = self.setIPNavigationController;
     
+//    if ([[GlobalData Data].serverPath isEqualToString:@""]) {
+//        self.window.rootViewController = self.setIPNavigationController;
+//    }
+//    else {
+//        self.window.rootViewController = self.fileListNavigationController;
+//    }
 }
 
 #pragma mark - 懒加载

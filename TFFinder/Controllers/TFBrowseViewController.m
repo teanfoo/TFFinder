@@ -29,7 +29,7 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     // 设置标题
-    NSString *fileName = [[self.filePath componentsSeparatedByString:@"/"] lastObject];
+    NSString *fileName = self.filePath.lastPathComponent;
     self.navigationItem.title = [fileName URLDecodingString];
     // 设置导航栏右边的按钮
     UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 42, 42)];

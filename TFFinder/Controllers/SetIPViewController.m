@@ -31,7 +31,18 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = kColorWithHex(0xDDDDDD);
     self.navigationItem.title = @"设置IP";
+    // 切换编码的按钮
+    UIButton *encodeBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+    [encodeBtn setTitle:@"Encode" forState:UIControlStateNormal];
+    [encodeBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [encodeBtn.titleLabel setFont:[UIFont systemFontOfSize:15.0]];
+    [encodeBtn addTarget:self action:@selector(onEncodeBtnClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:encodeBtn];
     [self setupMainView];
+}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.needLayoutUI = YES;
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -154,7 +165,16 @@
     self.IPTextField.text = [GlobalData Data].serverIP;
     self.portTextField.text = [GlobalData Data].serverPort;
 }
-#pragma mark - 按钮的点击事件
+#pragma mark - 切换编码按钮的点击事件
+- (void)onEncodeBtnClicked {
+    TFAlertView *alertView = [[TFAlertView alloc] initWithTitle:@"设置编码" message:nil easyHide:NO cancelText:@"Mac(UTF-8)" confirmText:@"Win(936)" cancelAction:^{
+        [GlobalData Data].encode = NSUTF8StringEncoding;
+    } confirmAction:^{
+        [GlobalData Data].encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
+    }];
+    [alertView show];
+}
+#pragma mark - 连接按钮的点击事件
 - (void)onConnectingButtonClick {
     // 收起键盘
     if ([self.IPTextField isFirstResponder]) [self.IPTextField resignFirstResponder];
@@ -203,8 +223,10 @@
 #pragma mark - 连接服务器
 - (void)connectToServer {
     [[HUDManager manager] showWaitViewAndText:@"连接中，请稍候..." inView:self.view];
-    NSString *configFilePath = [NSString stringWithFormat:@"%@%@",[GlobalData Data].serverPath, kConfigFilePath];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:configFilePath]];
+    NSString *configFilePath = [[GlobalData Data].serverPath stringByAppendingPathComponent:kConfigFile];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:configFilePath]];
+    request.HTTPMethod = @"GET";
+    request.timeoutInterval = 10;
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]
                            completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
@@ -221,7 +243,7 @@
                                
                                unsigned long encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
                                NSString *content = [[NSString alloc] initWithData:data encoding:encode];
-                               //                               DLog(@"content: %@", content);
+//                               DLog(@"content: %@", content);
                                if (content == nil) {// 数据错误,退出
                                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"连接失败!"
                                                                                    message:@"1.请确认您的服务已开启;\n2.请确认IP和端口号填写正确;\n3.请确认设备在同一网络环境中。"
