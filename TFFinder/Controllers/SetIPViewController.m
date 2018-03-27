@@ -241,8 +241,7 @@
                                    return;
                                }
                                
-                               unsigned long encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingDOSChineseSimplif);
-                               NSString *content = [[NSString alloc] initWithData:data encoding:encode];
+                               NSString *content = [[NSString alloc] initWithData:data encoding:[GlobalData Data].encode];
 //                               DLog(@"content: %@", content);
                                if (content == nil) {// 数据错误,退出
                                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"连接失败!"
